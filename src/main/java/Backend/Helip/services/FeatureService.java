@@ -48,6 +48,19 @@ public class FeatureService {
         return nearbyFeatures;
     }
 
+    public List<Feature> getByName(String name) {
+        List<Feature> allFeatures = featureRepository.findAll();
+        List<Feature> matchingFeatures = new ArrayList<>();
+    
+        for (Feature feature : allFeatures) {
+            if (feature.getProperties().getNimiFi().contains(name)) {
+                matchingFeatures.add(feature);
+            }
+        }
+    
+        return matchingFeatures;
+    }
+
     private double haversine(double lat1, double lon1, double lat2, double lon2) {
         int r = 6371;
         double latDistance = Math.toRadians(lat2 - lat1);
