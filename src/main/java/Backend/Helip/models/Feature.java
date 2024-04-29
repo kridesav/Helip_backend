@@ -1,6 +1,5 @@
 package Backend.Helip.models;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -13,10 +12,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import Backend.Helip.utils.PointDeserializer;
+import Backend.Helip.utils.FeatureDeserializer;
 
 @Entity
 @Table(name = "features")
+@JsonDeserialize(using = FeatureDeserializer.class)
 public class Feature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +48,6 @@ public class Feature {
     }
 
     @Column(columnDefinition = "geometry(Point,4326)")
-    @JsonAlias("geometry")
-    @JsonDeserialize(using = PointDeserializer.class)
     private Point location;
 
     @Embedded
