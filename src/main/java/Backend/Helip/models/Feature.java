@@ -46,9 +46,13 @@ public class Feature {
     }
 
     @Column(columnDefinition = "geometry(Point,4326)")
-    @JsonProperty("geometry")
+    @JsonProperty("location")
     @JsonDeserialize(using = PointDeserializer.class)
     private Point location;
+
+    @Embedded
+    @JsonProperty("geometry")
+    private Geometry geometry;
 
     @Embedded
     @JsonProperty("properties")
@@ -63,5 +67,13 @@ public class Feature {
 
     public void setLocation(Point location) {
         this.location = location;
+    }
+    
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
     }
 }
