@@ -21,13 +21,14 @@ public class FeatureDeserializer extends JsonDeserializer<Feature> {
         ObjectMapper mapper = (ObjectMapper) p.getCodec();
         Feature feature = mapper.treeToValue(p.readValueAsTree(), Feature.class);
 
-        if (feature.getGeometry() != null) {
+        if (feature.getGeometry() != null && feature.getGeometry().getCoordinates() != null) {
             Double[] coordinates = feature.getGeometry().getCoordinates();
             if (coordinates.length > 1) {
                 Point location = geometryFactory.createPoint(new Coordinate(coordinates[0], coordinates[1]));
                 feature.setLocation(location);
             }
         }
+
         return feature;
     }
 }
