@@ -1,6 +1,7 @@
 package Backend.Helip.models;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -52,6 +53,7 @@ public class Feature {
         this.type = type;
     }
 
+    @JsonIgnore
     @Column(columnDefinition = "geometry(Point,4326)")
     private Point location;
 
@@ -66,7 +68,6 @@ public class Feature {
     @JsonProperty("type")
     private String type;
 
-    @JsonGetter("location")
     public Point getLocation() {
         return location;
     }
