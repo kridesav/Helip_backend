@@ -3,6 +3,7 @@ package Backend.Helip.utils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Backend.Helip.models.Feature;
@@ -19,7 +20,8 @@ public class FeatureDeserializer extends JsonDeserializer<Feature> {
     @Override
     public Feature deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         ObjectMapper mapper = (ObjectMapper) p.getCodec();
-        Feature feature = mapper.treeToValue(p.readValueAsTree(), Feature.class);
+        JsonNode node = p.getCodec().readTree(p);
+        Feature feature = mapper.treeToValue(node, Feature.class);
 
         if (feature.getGeometry() != null && feature.getGeometry().getCoordinates() != null) {
             Double[] coordinates = feature.getGeometry().getCoordinates();
