@@ -6,7 +6,6 @@ import Backend.Helip.repositories.FeatureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,9 +22,8 @@ public class FeatureService {
 
     public void importJson(String path) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonFactory jsonFactory = new JsonFactory();
-    
-        try (JsonParser jsonParser = jsonFactory.createParser(new File("./" + path))) {
+        
+        try (JsonParser jsonParser = objectMapper.createParser(new File("./" + path))) {
             JsonToken jsonToken = jsonParser.nextToken();
             if (jsonToken != JsonToken.START_OBJECT) {
                 throw new IllegalStateException("Expected an object");
