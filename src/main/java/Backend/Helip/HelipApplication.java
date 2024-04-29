@@ -12,7 +12,7 @@ public class HelipApplication {
         ConfigurableApplicationContext context = SpringApplication.run(HelipApplication.class, args);
         FeatureService featureService = context.getBean(FeatureService.class);
         try {
-            featureService.importJson("lipas_kaikki_pisteet.json");
+            featureService.importJson("lipas_kaikki_pisteetC2.json");
         } catch (Exception e) {
             e.printStackTrace();
         }
