@@ -1,7 +1,7 @@
 import json
 
 # Load the JSON file
-with open('lipas_kaikki_pisteetC.json', 'r', encoding='utf-8') as f:
+with open('lipas_kaikki_pisteetC2.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
 
 # Use a dictionary to count "tyyppi_nim" values

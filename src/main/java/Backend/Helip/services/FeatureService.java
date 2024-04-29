@@ -1,15 +1,17 @@
 package Backend.Helip.services;
 
 import Backend.Helip.models.Feature;
-import Backend.Helip.models.FeatureCollection;
 import Backend.Helip.repositories.FeatureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +21,17 @@ public class FeatureService {
     private FeatureRepository featureRepository;
 
     public void importJson(String path) throws IOException {
-        byte[] jsonData = Files.readAllBytes(Paths.get("./" + path));
         ObjectMapper objectMapper = new ObjectMapper();
-        FeatureCollection featureCollection = objectMapper.readValue(jsonData, FeatureCollection.class);
-        for (Feature feature : featureCollection.getFeatures()) {
-            featureRepository.save(feature);
+        JsonFactory jsonFactory = new JsonFactory();
+        try (JsonParser jsonParser = jsonFactory.createParser(new File("./" + path))) {
+            JsonToken jsonToken = jsonParser.nextToken(); // Start array token
+            if (jsonToken != JsonToken.START_ARRAY) {
+                throw new IllegalStateException("Expected an array");
+            }
+            while (jsonParser.nextToken() == JsonToken.START_OBJECT) {
+                Feature feature = objectMapper.readValue(jsonParser, Feature.class);
+                featureRepository.save(feature);
+            }
         }
     }
 
