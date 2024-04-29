@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface FeatureRepository extends JpaRepository<Feature, Long> {
-    @Query(value = "SELECT * FROM Feature f WHERE ST_DWithin(f.location::geography, CAST(:location AS geography), :radius)", nativeQuery = true)
+    @Query(value = "SELECT * FROM Feature f WHERE ST_DWithin(CAST(f.location AS geography), CAST(:location AS geography), :radius)", nativeQuery = true)
     List<Feature> findWithinRadius(@Param("location") String location, @Param("radius") double radius);
 }

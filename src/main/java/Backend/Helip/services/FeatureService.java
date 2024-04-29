@@ -20,7 +20,12 @@ public class FeatureService {
     @Autowired
     private FeatureRepository featureRepository;
 
+    public void deleteAllFeatures() {
+        featureRepository.deleteAll();
+    }
+
     public void importJson(String path) throws IOException {
+        deleteAllFeatures();
         ObjectMapper objectMapper = new ObjectMapper();
         
         try (JsonParser jsonParser = objectMapper.createParser(new File("./" + path))) {
