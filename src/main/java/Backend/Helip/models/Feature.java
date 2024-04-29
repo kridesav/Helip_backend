@@ -46,7 +46,7 @@ public class Feature {
     }
 
     @Column(columnDefinition = "geometry(Point,4326)")
-    @JsonProperty("location")
+    @JsonProperty("geometry")
     @JsonDeserialize(using = PointDeserializer.class)
     private Point location;
 
