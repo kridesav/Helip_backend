@@ -1,7 +1,7 @@
 package Backend.Helip.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import org.locationtech.jts.geom.Point;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -26,14 +26,6 @@ public class Feature {
         this.id = id;
     }
 
-    public Geometry getGeometry() {
-        return geometry;
-    }
-
-    public void setGeometry(Geometry geometry) {
-        this.geometry = geometry;
-    }
-
     public Properties getProperties() {
         return properties;
     }
@@ -50,9 +42,9 @@ public class Feature {
         this.type = type;
     }
 
-    @Embedded
+    @Column(columnDefinition = "geometry(Point,4326)")
     @JsonProperty("geometry")
-    private Geometry geometry;
+    private Point location;
 
     @Embedded
     @JsonProperty("properties")
@@ -60,4 +52,12 @@ public class Feature {
     
     @JsonProperty("type")
     private String type;
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
 }

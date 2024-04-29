@@ -47,7 +47,7 @@ public class FeatureController {
             @RequestParam double longitude, @RequestHeader("Authorization") String idToken) {
         FirebaseToken decodedToken = firebaseService.decodeToken(idToken.replace("Bearer ", ""));
         if (decodedToken != null) {
-            List<Feature> features = featureService.getFeaturesWithinRadius(latitude, longitude, 5);
+            List<Feature> features = featureService.getFeaturesWithinRadius(latitude, longitude, 5000);
             return ResponseEntity.ok(features);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

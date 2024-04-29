@@ -2,12 +2,17 @@ package Backend.Helip.services;
 
 import Backend.Helip.models.Feature;
 import Backend.Helip.repositories.FeatureRepository;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -21,47 +26,44 @@ public class FeatureService {
     private FeatureRepository featureRepository;
 
     public void importJson(String path) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonFactory jsonFactory = new JsonFactory();
-        try (JsonParser jsonParser = jsonFactory.createParser(new File("./" + path))) {
-            JsonToken jsonToken = jsonParser.nextToken();
-            if (jsonToken != JsonToken.START_OBJECT) {
-                throw new IllegalStateException("Expected an object");
-            }
-            while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-                String fieldName = jsonParser.getCurrentName();
-                if ("features".equals(fieldName)) {
-                    jsonParser.nextToken();
-                    while (jsonParser.nextToken() == JsonToken.START_OBJECT) {
-                        Feature feature = objectMapper.readValue(jsonParser, Feature.class);
-                        featureRepository.save(feature);
-                    }
-                } else {
-                    jsonParser.skipChildren();
+    ObjectMapper objectMapper = new ObjectMapper();
+    JsonFactory jsonFactory = new JsonFactory();
+    GeometryFactory geometryFactory = new GeometryFactory();
+
+    try (JsonParser jsonParser = jsonFactory.createParser(new File("./" + path))) {
+        JsonToken jsonToken = jsonParser.nextToken();
+        if (jsonToken != JsonToken.START_OBJECT) {
+            throw new IllegalStateException("Expected an object");
+        }
+        while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+            String fieldName = jsonParser.getCurrentName();
+            if ("features".equals(fieldName)) {
+                jsonParser.nextToken();
+                while (jsonParser.nextToken() == JsonToken.START_OBJECT) {
+                    JsonNode jsonFeature = objectMapper.readTree(jsonParser);
+                    double longitude = jsonFeature.get("geometry").get("coordinates").get(0).asDouble();
+                    double latitude = jsonFeature.get("geometry").get("coordinates").get(1).asDouble();
+                    Point location = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+
+                    Feature feature = objectMapper.convertValue(jsonFeature, Feature.class);
+                    feature.setLocation(location);
+
+                    featureRepository.save(feature);
                 }
+            } else {
+                jsonParser.skipChildren();
             }
         }
     }
+}
 
     public List<Feature> getAllFeatures() {
         return featureRepository.findAll();
     }
 
     public List<Feature> getFeaturesWithinRadius(double latitude, double longitude, double radius) {
-        List<Feature> allFeatures = featureRepository.findAll();
-        List<Feature> nearbyFeatures = new ArrayList<>();
-
-        for (Feature feature : allFeatures) {
-            Double[] coordinates = feature.getGeometry().getCoordinates();
-            double featureLongitude = coordinates[0].doubleValue();
-            double featureLatitude = coordinates[1].doubleValue();
-
-            if (haversine(latitude, longitude, featureLatitude, featureLongitude) <= radius) {
-                nearbyFeatures.add(feature);
-            }
-        }
-
-        return nearbyFeatures;
+        String location = "POINT(" + longitude + " " + latitude + ")";
+        return featureRepository.findWithinRadius(location, radius);
     }
 
     public List<Feature> getByName(String name) {
@@ -75,18 +77,5 @@ public class FeatureService {
         }
     
         return matchingFeatures;
-    }
-
-    private double haversine(double lat1, double lon1, double lat2, double lon2) {
-        int r = 6371;
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = r * c;
-
-        return distance;
     }
 }
