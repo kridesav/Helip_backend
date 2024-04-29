@@ -24,13 +24,21 @@ public class FeatureService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonFactory jsonFactory = new JsonFactory();
         try (JsonParser jsonParser = jsonFactory.createParser(new File("./" + path))) {
-            JsonToken jsonToken = jsonParser.nextToken(); // Start array token
-            if (jsonToken != JsonToken.START_ARRAY) {
-                throw new IllegalStateException("Expected an array");
+            JsonToken jsonToken = jsonParser.nextToken();
+            if (jsonToken != JsonToken.START_OBJECT) {
+                throw new IllegalStateException("Expected an object");
             }
-            while (jsonParser.nextToken() == JsonToken.START_OBJECT) {
-                Feature feature = objectMapper.readValue(jsonParser, Feature.class);
-                featureRepository.save(feature);
+            while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
+                String fieldName = jsonParser.getCurrentName();
+                if ("features".equals(fieldName)) {
+                    jsonParser.nextToken();
+                    while (jsonParser.nextToken() == JsonToken.START_OBJECT) {
+                        Feature feature = objectMapper.readValue(jsonParser, Feature.class);
+                        featureRepository.save(feature);
+                    }
+                } else {
+                    jsonParser.skipChildren();
+                }
             }
         }
     }
