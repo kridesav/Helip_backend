@@ -1,6 +1,8 @@
 package Backend.Helip.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import org.locationtech.jts.geom.Point;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -9,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import Backend.Helip.utils.PointDeserializer;
 
 @Entity
 @Table(name = "features")
@@ -44,6 +47,7 @@ public class Feature {
 
     @Column(columnDefinition = "geometry(Point,4326)")
     @JsonProperty("geometry")
+    @JsonDeserialize(using = PointDeserializer.class)
     private Point location;
 
     @Embedded
