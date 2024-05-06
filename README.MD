@@ -80,6 +80,7 @@ The main entity in the database is the `Feature`, which has the following struct
 - `type`: String
 - `properties`: Properties
 - `geometry`: Geometry
+- `location`: Point
 
 ### Properties
 
@@ -113,6 +114,8 @@ The main entity in the database is the `Feature`, which has the following struct
 - `coordinates`: Array of Double
 
 The `Feature` object is constructed from a JSON file and stored in the database. The `properties` and `geometry` fields are nested objects within the `Feature` object. The `coordinates` field in the `Geometry` object is an array of doubles.
+
+After construction is complete `location` data is parsed from `geometry` into a `Point` value.
 
 ## Data Preprocessing
 
