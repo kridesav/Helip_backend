@@ -2,11 +2,11 @@
 
 ## Description
 
-Helip Backend is a Spring Boot RESTful API that interacts with a PostgreSQL + PostGIS database deployed on Heroku. 
+Helip Backend is a Spring Boot application that processes a large JSON file and stores its data in a PostgreSQL + PostGIS database deployed on Heroku. 
 
-The application processes a large JSON file, storing its data in the database. 
+The application provides several RESTful API endpoints to interact with the stored data. These endpoints allow users to retrieve all features, search for features by name, and find locations near a given latitude and longitude. 
 
-It provides an endpoint (`api/nearby`) that performs PostGIS geometry queries to return locations near a given latitude and longitude.
+The application also includes security features, using Firebase Admin SDK for authentication and authorization. Users must provide a valid Firebase ID token in the `Authorization` header to access the API endpoints.
 
 ## Installation
 
